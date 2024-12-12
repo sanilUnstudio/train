@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import axios from "axios";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { useRouter } from "next/navigation";
 
 
 export default function Step1({ setStep, setZipUrl  }) {
@@ -12,6 +13,7 @@ export default function Step1({ setStep, setZipUrl  }) {
     const [productName, setProductName] = useState("");
     const [allImages, setAllImages] = useState([]);
     const [captionsData, setCaptionsData] = useState([]);
+    const router = useRouter();
 
     const handleImageChange = (e) => {
         const selectedFiles = Array.from(e.target.files); // Convert FileList to Array
@@ -100,7 +102,9 @@ export default function Step1({ setStep, setZipUrl  }) {
 
             // Optional: Set the URL to display or for further actions
             setZipUrl(response.data.fileUrl);
-            setStep(2);
+            // setStep(2);
+            router.refresh();
+
         } catch (error) {
             console.error("Error uploading zip file:", error);
         }
@@ -138,7 +142,7 @@ export default function Step1({ setStep, setZipUrl  }) {
                     <div className="h-full">
                         <div className='flex items-center justify-between mb-4 h-8'>
                             <h2 className="text-xl font-bold">Uploaded Images and Captions</h2>
-                            <Button  onClick={() => generateZip(captionsData)}>Second</Button>
+                            <Button  onClick={() => generateZip(captionsData)}>Download Zip</Button>
                         </div>
                         <div className="grid grid-cols-3 gap-4 h-[calc(100%-5rem)] overflow-auto">
                             {captionsData.map((item, index) => (
