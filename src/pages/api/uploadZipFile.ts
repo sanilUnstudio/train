@@ -7,7 +7,15 @@ import {
 } from "@aws-sdk/client-s3";
 
 const CHUNK_SIZE = 5 * 1024 * 1024; // 5 MB
+// /pages/api/upload.js
 
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '200mb' // Set desired value here
+        }
+    }
+}
 
 const s3 = new S3Client({
   credentials: {
@@ -75,12 +83,16 @@ export default async function handler(req, res) {
 
         uploadPromises.push(
           s3.send(uploadPartCommand).then((data) => {
+            // Push the part details including the correct part number
             parts.push({ PartNumber: index + 1, ETag: data.ETag });
           })
         );
       });
 
       await Promise.all(uploadPromises);
+
+      // Sort the parts by PartNumber before sending the complete command
+      parts.sort((a, b) => a.PartNumber - b.PartNumber);
 
       const completeCommand = new CompleteMultipartUploadCommand({
         Bucket: bucketName,
@@ -90,6 +102,7 @@ export default async function handler(req, res) {
       });
 
       await s3.send(completeCommand);
+ 
 
       const fileUrl = `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
       return res.status(200).json({ fileUrl });
