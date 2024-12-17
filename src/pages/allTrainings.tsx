@@ -48,6 +48,7 @@ const AllTrainings = () => {
                               <TableHead className="w-1/6 min-w-[150px] text-white font-bold">Product Image</TableHead>
                               <TableHead className="w-1/2 min-w-[200px] text-white font-bold">Prompt</TableHead>
                               <TableHead className="w-1/6 min-w-[150px] text-white font-bold">Zip URL</TableHead>
+                              <TableHead className="w-1/6 min-w-[150px] text-white font-bold">Training Name</TableHead>
                           </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -64,6 +65,11 @@ const AllTrainings = () => {
                                   <TableCell className="align-top">
                                       <div className="max-h-[100px] overflow-y-auto pr-2">
                                           {item.image_url}
+                                      </div>
+                                  </TableCell>
+                                  <TableCell className="align-top">
+                                      <div className="max-h-[100px] overflow-y-auto pr-2">
+                                          {item.training_name}
                                       </div>
                                   </TableCell>
                               </TableRow>
