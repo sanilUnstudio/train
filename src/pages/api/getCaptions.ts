@@ -59,7 +59,10 @@ export default async function handler(
   try {
 
 
-    const form = new IncomingForm();
+    const form = new IncomingForm({
+      maxFileSize: 100 * 1024 * 1024, // Set limit to 50MB
+      multiples: true, // Allow multiple file uploads
+    });
     const { fields, files }: ParsedForm = await new Promise(
       (resolve, reject) => {
         form.parse(req, (err, fields, files) => {
