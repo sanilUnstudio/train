@@ -20,6 +20,7 @@ export default async function handler(
        training_id,
        status,
        prompt,
+       product_image,
      } = req.body;
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -41,6 +42,7 @@ export default async function handler(
         training_id,
         status,
         prompt,
+        product_image,
       },
     });
 res.status(200).json({

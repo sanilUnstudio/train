@@ -114,7 +114,7 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
             console.error("Error uploading zip file:", error);
         }
         // Save the zip file locally (if needed)
-        saveAs(content, "images_and_captions.zip");
+        saveAs(content, `${productName}-${uuidv4()}.zip`);
         setZipStatus(false);
     };
 
