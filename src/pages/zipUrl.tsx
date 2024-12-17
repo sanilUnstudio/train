@@ -14,7 +14,7 @@ import axios from "axios"
 import { useRouter } from "next/navigation";
 
 
-export default function ZipUrl( ) {
+export default function ZipUrl() {
   const { toast } = useToast()
   const [steps, setSteps] = useState<number>(1000)
   const [learningRate, setLearningRate] = useState<number[]>([0.0004])
@@ -162,10 +162,10 @@ export default function ZipUrl( ) {
 
 
   return (
-    <div className="w-full h-screen">
-
+    <div className="w-full h-screen overflow-hidden">
+      <h1 onClick={() => router.push("/")} className="text-2xl font-bold ml-4 mt-2 cursor-pointer">Train with Zipurl</h1>
       {!isTrainingStarted &&
-        <div className="w-full h-screen flex justify-center items-center">
+        <div className="w-full h-[calc(100%-60px)] flex justify-center items-center">
           <Card className="w-full max-w-[80%] mx-auto border">
             <CardHeader>
               <CardTitle>AI Training Parameters</CardTitle>
@@ -325,7 +325,7 @@ export default function ZipUrl( ) {
                     />
                   </div>
                 </div>
-               
+
                 <Button type="submit" className="w-full mt-4">Submit</Button>
               </form>
             </CardContent>

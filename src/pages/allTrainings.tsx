@@ -9,6 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { useRouter } from "next/navigation";
 
 interface DataItem {
     id: number
@@ -23,7 +24,7 @@ const fetchAllTrainings = async () => {
     return res.data;
 }
 const AllTrainings = () => {
-
+    const router = useRouter();
 
     const { data: allImages, isLoading } = useQuery({
         queryKey: ['all-trainings'],
@@ -35,9 +36,9 @@ const AllTrainings = () => {
 
   return (
       <div className='w-screen h-screen '>
-          <h1 className='text-center text-2xl py-2'>All Trainings</h1>
+          <h1 onClick={() => router.push('/')} className='text-center text-2xl py-2 cursor-pointer'>All Trainings</h1>
 
-          {isLoading && <p>Loading...</p>}
+          {isLoading && <p className='text-center'>Loading...</p>}
           {!isLoading && allImages?.trainings.length > 0 && 
           
               <div className='w-[80%] mx-auto border border-white border-opacity-40 rounded-lg overflow-auto h-[90vh]'>
