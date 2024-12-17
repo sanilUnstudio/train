@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import axios from "axios"
+import { useRouter } from "next/navigation";
 
 
 export default function AITrainingForm({ zipUrl, prompt }: { zipUrl: string, prompt: string }) {
@@ -23,12 +24,14 @@ export default function AITrainingForm({ zipUrl, prompt }: { zipUrl: string, pro
     const [loraRank, setLoraRank] = useState<string>("8")
     const [triggerWord, setTriggerWord] = useState<string>("UNST")
     const [optimizer, setOptimizer] = useState<string>("adamw8bit")
-    const [captionDropoutRate, setCaptionDropoutRate] = useState<number[]>([0])
+    const [captionDropoutRate, setCaptionDropoutRate] = useState<number[]>([0.05])
     const [autoCaption, setAutoCaption] = useState<boolean>(false)
     const [resolution, setResolution] = useState<string>("512,768,1024");
     const [imageUrl, setImageUrl] = useState<string>(zipUrl);
     const [isTrainingStarted, setIsTrainingStarted] = useState<boolean>(false);
     const [trainingId, setTrainingId] = useState('');
+    const router = useRouter();
+
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
@@ -296,6 +299,7 @@ console.log("data to send",dataToSend)
 
                     <div className="flex justify-end items-center">
                         <Button onClick={() => terminateTraining(trainingId)}>stop</Button>
+                        <Button onClick={() => router.refresh()}>Add new Training</Button>
                     </div>
                 </>
             }
