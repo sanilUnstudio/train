@@ -36,7 +36,8 @@
     "react-dom": "^19.0.0",
     "supabase": "^2.0.0",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@types/formidable": "^3.4.5",

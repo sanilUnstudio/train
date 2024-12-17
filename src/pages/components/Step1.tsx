@@ -5,20 +5,21 @@ import { Input } from "@/components/ui/input"
 import axios from "axios";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { useRouter } from "next/navigation";
+import { v4 as uuidv4 } from 'uuid';
+import { X } from 'lucide-react';
 
 
-export default function Step1({ setStep, setZipUrl, setPrompt  }) {
+export default function Step1({ setStep, setZipUrl, setPrompt }) {
     const [isLoading, setIsLoading] = useState(false);
     const [productName, setProductName] = useState("");
     const [allImages, setAllImages] = useState([]);
     const [captionsData, setCaptionsData] = useState([]);
     const [zipStatus, setZipStatus] = useState(false)
-    const router = useRouter();
 
     const handleImageChange = (e) => {
         const selectedFiles = Array.from(e.target.files); // Convert FileList to Array
-        setAllImages((prevImages) => [...prevImages, ...selectedFiles]); // Append new files to existing state
+        setAllImages(selectedFiles); // Append new files to existing state
+        console.log("allImages:", selectedFiles)
         e.target.value = ""; // Clear the input value to allow re-upload of the same file
     };
 
@@ -98,7 +99,7 @@ export default function Step1({ setStep, setZipUrl, setPrompt  }) {
         try {
             const response = await axios.post("/api/uploadZipFile", {
                 fileContent,
-                fileName: "images_and_captions.zip",
+                fileName: `${productName}-${uuidv4()}.zip`,
                 fileSize: content.size,
             });
             console.log("Zip file uploaded successfully:", response.data);
@@ -117,7 +118,13 @@ export default function Step1({ setStep, setZipUrl, setPrompt  }) {
 
 
 
+    const handleRemoveImage = (name) => {
+        const data = allImages.filter((f, i) => f.name !== name);
+        console.log("sanil", data);
+        setAllImages(data);
+    };
 
+console.log("sanil")
 
     return (
         <div className="container mx-auto p-4 w-[80%]">
@@ -137,18 +144,18 @@ export default function Step1({ setStep, setZipUrl, setPrompt  }) {
                 />
                 <div className='flex justify-end'>
                     <Button className='border border-white border-opacity-40' type="submit" onClick={() => sendRequest(productName, allImages)} disabled={(isLoading || zipStatus)}>
-                        {isLoading  ? 'Generating...' : 'Generate Captions'}
+                        {isLoading ? 'Generating...' : 'Generate Captions'}
                     </Button>
-                
+
                 </div>
             </div>
 
             <div className='h-[75vh] mt-4'>
-                {captionsData.length > 0 && (
+                {captionsData.length > 0 ? (
                     <div className="h-full">
                         <div className='flex items-center justify-between mb-4 h-8'>
-                            <h2 className="text-xl font-bold">Uploaded Images and Captions</h2>
-                            <Button disabled={zipStatus} onClick={() => generateZip(captionsData)}>
+                            <h2 className="text-xl font-bold ">Uploaded Images and Captions</h2>
+                            <Button className='border border-white border-opacity-40' disabled={zipStatus} onClick={() => generateZip(captionsData)}>
                                 {zipStatus ? 'Generating...' : 'Generate Zip'}
                             </Button>
                         </div>
@@ -169,7 +176,31 @@ export default function Step1({ setStep, setZipUrl, setPrompt  }) {
                             ))}
                         </div>
                     </div>
-                )}
+                ) :
+
+                    <div style={{ display: "flex", flexWrap: "wrap", marginTop: "20px" }}>
+                        {allImages.map((file, index) => (
+                            <div
+                                key={index}
+                                className='m-[10px] p-[5px] rounded-lg'
+                                style={{
+                                    border: "1px solid #ccc",
+                                    padding: "5px",
+                                    position: "relative",
+                                    width: "180px",
+                                    height: "180px"
+                                }}
+                            >
+                                <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={`uploaded-${index}`}
+                                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                                />
+                                <X onClick={() => handleRemoveImage(file.name)} size={18} className='absolute top-0.5 right-0.5 z-10 text-red-600 cursor-pointer' />
+                            </div>
+                        ))}
+                    </div>
+                }
             </div>
 
         </div>

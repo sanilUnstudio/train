@@ -27,7 +27,6 @@ export default function AITrainingForm({ zipUrl, prompt }: { zipUrl: string, pro
     const [captionDropoutRate, setCaptionDropoutRate] = useState<number[]>([0.05])
     const [autoCaption, setAutoCaption] = useState<boolean>(false)
     const [resolution, setResolution] = useState<string>("512,768,1024");
-    const [imageUrl, setImageUrl] = useState<string>(zipUrl);
     const [isTrainingStarted, setIsTrainingStarted] = useState<boolean>(false);
     const [trainingId, setTrainingId] = useState('');
     const router = useRouter();
@@ -66,7 +65,7 @@ export default function AITrainingForm({ zipUrl, prompt }: { zipUrl: string, pro
             huggingface_repo_id: `bb1070/${trainingName}`,
         }
 
-console.log("data to send",dataToSend)
+        console.log("data to send", dataToSend)
         try {
             toast({
                 title: "Training started...",
@@ -84,7 +83,7 @@ console.log("data to send",dataToSend)
             dataToSend.training_id = response.data.data.trainingId;
             dataToSend.status = "queued";
             dataToSend.prompt = prompt;
-           
+
             const res = await axios.post('/api/addTrainings', dataToSend)
             console.log("Response from API:", response.data)
 
@@ -157,149 +156,151 @@ console.log("data to send",dataToSend)
 
 
     return (
-        <div className="w-full h-screen flex justify-center items-center">
+        <div className="w-full h-screen">
 
-            {!isTrainingStarted && <Card className="w-full max-w-[80%] mx-auto border">
-                <CardHeader>
-                    <CardTitle>AI Training Parameters</CardTitle>
-                    <CardDescription>Adjust the training parameters for your AI model</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="steps">Steps: {steps}</Label>
-                            <Input
-                                id="batch-size"
-                                type="number"
-                                min={0}
-                                max={4000}
-                                value={steps}
-                                onChange={(e) => setSteps(Number(e.target.value))}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="learning-rate">Learning Rate: {learningRate[0].toFixed(6)}</Label>
-                            <Slider
-                                id="learning-rate"
-                                min={0}
-                                max={0.0004}
-                                step={0.000001}
-                                value={learningRate}
-                                onValueChange={setLearningRate}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="batch-size">Batch Size</Label>
-                            <Input
-                                id="batch-size"
-                                type="number"
-                                min={1}
-                                max={8}
-                                value={batchSize}
-                                onChange={(e) => setBatchSize(Number(e.target.value))}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Specific Layers Trained</Label>
-                            <div className="flex space-x-4">
-                                {[7, 12, 16, 20].map((layer) => (
-                                    <div key={layer} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`layer-${layer}`}
-                                            checked={specificLayersTrained.includes(layer)}
-                                            onCheckedChange={(checked) => {
-                                                if (checked) {
-                                                    setSpecificLayersTrained([...specificLayersTrained, layer])
-                                                } else {
-                                                    setSpecificLayersTrained(specificLayersTrained.filter((l) => l !== layer))
-                                                }
-                                            }}
-                                        />
-                                        <Label htmlFor={`layer-${layer}`}>{layer}</Label>
+            {!isTrainingStarted &&
+                <div className="w-full h-screen flex justify-center items-center">
+                    <Card className="w-full max-w-[80%] mx-auto border">
+                        <CardHeader>
+                            <CardTitle>AI Training Parameters</CardTitle>
+                            <CardDescription>Adjust the training parameters for your AI model</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="steps">Steps: {steps}</Label>
+                                    <Input
+                                        id="batch-size"
+                                        type="number"
+                                        min={0}
+                                        max={4000}
+                                        value={steps}
+                                        onChange={(e) => setSteps(Number(e.target.value))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="learning-rate">Learning Rate: {learningRate[0].toFixed(6)}</Label>
+                                    <Slider
+                                        id="learning-rate"
+                                        min={0}
+                                        max={0.0004}
+                                        step={0.000001}
+                                        value={learningRate}
+                                        onValueChange={setLearningRate}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="batch-size">Batch Size</Label>
+                                    <Input
+                                        id="batch-size"
+                                        type="number"
+                                        min={1}
+                                        max={8}
+                                        value={batchSize}
+                                        onChange={(e) => setBatchSize(Number(e.target.value))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Specific Layers Trained</Label>
+                                    <div className="flex space-x-4">
+                                        {[7, 12, 16, 20].map((layer) => (
+                                            <div key={layer} className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={`layer-${layer}`}
+                                                    checked={specificLayersTrained.includes(layer)}
+                                                    onCheckedChange={(checked) => {
+                                                        if (checked) {
+                                                            setSpecificLayersTrained([...specificLayersTrained, layer])
+                                                        } else {
+                                                            setSpecificLayersTrained(specificLayersTrained.filter((l) => l !== layer))
+                                                        }
+                                                    }}
+                                                />
+                                                <Label htmlFor={`layer-${layer}`}>{layer}</Label>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="training-name">Training Name</Label>
-                            <Input
-                                id="training-name"
-                                value={trainingName}
-                                onChange={(e) => setTrainingName(e.target.value)}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>LoRA Rank</Label>
-                            <RadioGroup value={loraRank} className="flex" onValueChange={setLoraRank}>
-                                {[8, 16, 32, 64].map((rank) => (
-                                    <div key={rank} className="flex items-center space-x-2">
-                                        <RadioGroupItem value={rank.toString()} id={`rank-${rank}`} />
-                                        <Label htmlFor={`rank-${rank}`}>{rank}</Label>
-                                    </div>
-                                ))}
-                            </RadioGroup>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="trigger-word">Trigger Word</Label>
-                            <Input
-                                id="trigger-word"
-                                value={triggerWord}
-                                onChange={(e) => setTriggerWord(e.target.value)}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="optimizer">Optimizer</Label>
-                            <Select value={optimizer} onValueChange={setOptimizer}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select optimizer" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="adamw8bit">AdamW8bit</SelectItem>
-                                    <SelectItem value="prodigy">Prodigy</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="caption-dropout-rate">Caption Dropout Rate: {captionDropoutRate[0].toFixed(2)}</Label>
-                            <Slider
-                                id="caption-dropout-rate"
-                                min={0}
-                                max={1}
-                                step={0.01}
-                                value={captionDropoutRate}
-                                onValueChange={setCaptionDropoutRate}
-                            />
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Switch
-                                id="auto-caption"
-                                checked={autoCaption}
-                                onCheckedChange={setAutoCaption}
-                            />
-                            <Label htmlFor="auto-caption">Auto Caption</Label>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="resolution">Resolution</Label>
-                            <Input
-                                id="resolution"
-                                value={resolution}
-                                onChange={(e) => setResolution(e.target.value)}
-                            />
-                        </div>
-                        <Button type="submit" className="w-full">Submit</Button>
-                    </form>
-                </CardContent>
-            </Card>}
-
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="training-name">Training Name</Label>
+                                    <Input
+                                        id="training-name"
+                                        value={trainingName}
+                                        onChange={(e) => setTrainingName(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>LoRA Rank</Label>
+                                    <RadioGroup value={loraRank} className="flex" onValueChange={setLoraRank}>
+                                        {[8, 16, 32, 64].map((rank) => (
+                                            <div key={rank} className="flex items-center space-x-2">
+                                                <RadioGroupItem value={rank.toString()} id={`rank-${rank}`} />
+                                                <Label htmlFor={`rank-${rank}`}>{rank}</Label>
+                                            </div>
+                                        ))}
+                                    </RadioGroup>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="trigger-word">Trigger Word</Label>
+                                    <Input
+                                        id="trigger-word"
+                                        value={triggerWord}
+                                        onChange={(e) => setTriggerWord(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="optimizer">Optimizer</Label>
+                                    <Select value={optimizer} onValueChange={setOptimizer}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select optimizer" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="adamw8bit">AdamW8bit</SelectItem>
+                                            <SelectItem value="prodigy">Prodigy</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="caption-dropout-rate">Caption Dropout Rate: {captionDropoutRate[0].toFixed(2)}</Label>
+                                    <Slider
+                                        id="caption-dropout-rate"
+                                        min={0}
+                                        max={1}
+                                        step={0.01}
+                                        value={captionDropoutRate}
+                                        onValueChange={setCaptionDropoutRate}
+                                    />
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="auto-caption"
+                                        checked={autoCaption}
+                                        onCheckedChange={setAutoCaption}
+                                    />
+                                    <Label htmlFor="auto-caption">Auto Caption</Label>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="resolution">Resolution</Label>
+                                    <Input
+                                        id="resolution"
+                                        value={resolution}
+                                        onChange={(e) => setResolution(e.target.value)}
+                                    />
+                                </div>
+                                <Button type="submit" className="w-full">Submit</Button>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+                }
 
             {
                 isTrainingStarted &&
                 <>
                     <h1 className="text-2xl font-bold text-center mt-4">Training started</h1>
-
-                    <div className="flex justify-end items-center">
-                        <Button onClick={() => terminateTraining(trainingId)}>stop</Button>
-                        <Button onClick={() => router.refresh()}>Add new Training</Button>
+                    <div className="flex justify-end items-center gap-4">
+                        <Button className="border-white border-opacity-40 border" onClick={() => terminateTraining(trainingId)}>stop</Button>
+                        <Button className="border-white border-opacity-40 border" onClick={() => router.refresh()}>Add new Training</Button>
                     </div>
                 </>
             }
