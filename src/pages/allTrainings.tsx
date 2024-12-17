@@ -33,13 +33,12 @@ const AllTrainings = () => {
         },
     });
 
-    console.log(allImages?.trainings)
   return (
       <div className='w-screen h-screen '>
           <h1 className='text-center text-2xl py-2'>All Trainings</h1>
 
           {isLoading && <p>Loading...</p>}
-          {!isLoading && allImages.trainings.length > 0 && 
+          {!isLoading && allImages?.trainings.length > 0 && 
           
               <div className='w-[80%] mx-auto border border-white border-opacity-40 rounded-lg overflow-auto h-[90vh]'>
                   <Table className='  '>
@@ -51,7 +50,7 @@ const AllTrainings = () => {
                           </TableRow>
                       </TableHeader>
                       <TableBody>
-                          {allImages.trainings.map((item) => (
+                          {allImages?.trainings.map((item) => (
                               <TableRow key={item.id} className="min-h-[70px] cursor-pointer hover:bg-[#18181c] border-t border-white border-opacity-40">
                                   <TableCell className="align-top">
                                       {item.product_image || 'N/A'}
