@@ -10,6 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast"
 
 interface DataItem {
     id: number
@@ -25,7 +26,7 @@ const fetchAllTrainings = async () => {
 }
 const AllTrainings = () => {
     const router = useRouter();
-
+    const { toast } = useToast()
     const { data: allImages, isLoading } = useQuery({
         queryKey: ['all-trainings'],
         queryFn: async () => {
@@ -55,7 +56,16 @@ const AllTrainings = () => {
                           {allImages?.trainings.map((item) => (
                               <TableRow key={item.id} className="min-h-[70px] cursor-pointer hover:bg-[#18181c] border-t border-white border-opacity-40">
                                   <TableCell className="align-top">
-                                      {item.product_image || 'N/A'}
+                                      {item.product_image ?
+                                      
+                                          <div onClick={() =>
+                                          {
+                                              navigator.clipboard.writeText(item.product_image); 
+                                              toast({ title: "Copied product image url" })
+                                          }} className='w-full h-full'>
+                                              <img src={item.product_image} className='object-contain'/>
+                                      </div>
+                                      : 'N/A'}
                                   </TableCell>
                                   <TableCell className="font-medium align-top">
                                       <div className="max-h-[100px] overflow-y-auto pr-2">
