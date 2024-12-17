@@ -14,7 +14,7 @@ import axios from "axios"
 import { useRouter } from "next/navigation";
 
 
-export default function AITrainingForm({ zipUrl, prompt }: { zipUrl: string, prompt: string }) {
+export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUrl: string, prompt: string, productImage: string }) {
     const { toast } = useToast()
     const [steps, setSteps] = useState<number>(1000)
     const [learningRate, setLearningRate] = useState<number[]>([0.0004])
@@ -83,6 +83,7 @@ export default function AITrainingForm({ zipUrl, prompt }: { zipUrl: string, pro
             dataToSend.training_id = response.data.data.trainingId;
             dataToSend.status = "queued";
             dataToSend.prompt = prompt;
+            dataToSend.product_image = productImage;
 
             const res = await axios.post('/api/addTrainings', dataToSend)
             console.log("Response from API:", response.data)

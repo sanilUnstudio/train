@@ -7,14 +7,15 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { v4 as uuidv4 } from 'uuid';
 import { X } from 'lucide-react';
+import { useRouter } from "next/navigation";
 
-
-export default function Step1({ setStep, setZipUrl, setPrompt }) {
+export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }) {
     const [isLoading, setIsLoading] = useState(false);
     const [productName, setProductName] = useState("");
     const [allImages, setAllImages] = useState([]);
     const [captionsData, setCaptionsData] = useState([]);
-    const [zipStatus, setZipStatus] = useState(false)
+    const [zipStatus, setZipStatus] = useState(false);
+    const router = useRouter();
 
     const handleImageChange = (e) => {
         const selectedFiles = Array.from(e.target.files); // Convert FileList to Array
@@ -50,6 +51,7 @@ export default function Step1({ setStep, setZipUrl, setPrompt }) {
             console.log("mergedData:", mergedData);
             setCaptionsData(mergedData);// Store the response data to display captions
             setPrompt(mergedData[0].caption)
+            setProductImage(mergedData[0].imageUrl)
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Axios error:", error.response?.data || error.message);
@@ -125,7 +127,14 @@ export default function Step1({ setStep, setZipUrl, setPrompt }) {
 
     return (
         <div className="container mx-auto p-4 w-[80%]">
-            <h1 className="text-2xl font-bold mb-4">Add Images</h1>
+            <div className='flex items-center justify-between my-4'>
+                <h1 className="text-2xl font-bold">Add Images</h1>
+
+                <div className='flex items-center gap-2'>
+                    <Button onClick={() => router.push("/zipUrl")} className='border border-white border-opacity-40'>Train with zipUrl</Button>
+                    <Button onClick={() => router.push("/allTrainings")} className='border border-white border-opacity-40'>All Trainings</Button>
+                </div>
+            </div>
             <div className='flex flex-col gap-2'>
                 <Input
                     type="text"

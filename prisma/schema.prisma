@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Trainings {
-  id                      BigInt    @id @default(autoincrement())
+  id                      Int       @id @default(autoincrement()) @db.SmallInt
   createdAt               DateTime  @default(now()) @db.Timestamptz(6)
   training_name           String?
   image_url               String?
@@ -24,6 +24,25 @@ model Trainings {
   prompt                  String?
   training_id             String?
   updatedAt               DateTime? @default(now()) @db.Timestamp(6)
+  product_image           String?
 
   @@map("trainings")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model trainingOutputs {
+  id             BigInt    @id @default(autoincrement())
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime? @default(now()) @db.Timestamp(6)
+  imageUrl       String?
+  width          Int?
+  height         Int?
+  seed           String?
+  timeTaken      Float?    @db.Real
+  prompt         String?
+  scale          Float?    @db.Real
+  steps          Int?      @db.SmallInt
+  guidance_scale Float?    @db.Real
+  image_format   String?
+  trainingId     String?
 }
