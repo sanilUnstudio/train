@@ -120,11 +120,8 @@ export default function Step1({ setStep, setZipUrl, setPrompt }) {
 
     const handleRemoveImage = (name) => {
         const data = allImages.filter((f, i) => f.name !== name);
-        console.log("sanil", data);
         setAllImages(data);
     };
-
-console.log("sanil")
 
     return (
         <div className="container mx-auto p-4 w-[80%]">
