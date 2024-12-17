@@ -19,7 +19,7 @@ interface DataItem {
 
 
 const fetchAllTrainings = async () => {
-    const res = await axios.post('/api/getAllTrainings');
+    const res = await axios('/api/getAllTrainings');
     return res.data;
 }
 const AllTrainings = () => {
