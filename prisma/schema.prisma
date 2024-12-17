@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Trainings {
+  id                      BigInt    @id @default(autoincrement())
+  createdAt               DateTime  @default(now()) @db.Timestamptz(6)
+  training_name           String?
+  image_url               String?
+  steps                   Int?      @db.SmallInt
+  batch_size              Int?      @db.SmallInt
+  specific_layers_trained String?
+  lora_rank               String?
+  trigger_word            String?
+  caption_dropout_rate    Int?      @db.SmallInt
+  resolution              String?
+  learning_rate           Float?    @db.Real
+  status                  String?
+  prompt                  String?
+  training_id             String?
+  updatedAt               DateTime? @default(now()) @db.Timestamp(6)
+
+  @@map("trainings")
+}

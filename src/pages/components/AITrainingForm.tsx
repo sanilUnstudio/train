@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
@@ -14,9 +13,9 @@ import { useToast } from "@/hooks/use-toast"
 import axios from "axios"
 
 
-export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
+export default function AITrainingForm({ zipUrl, prompt }: { zipUrl: string, prompt: string }) {
     const { toast } = useToast()
-    const [steps, setSteps] = useState<number[]>([4000])
+    const [steps, setSteps] = useState<number>(1000)
     const [learningRate, setLearningRate] = useState<number[]>([0.0004])
     const [batchSize, setBatchSize] = useState<number>(1)
     const [specificLayersTrained, setSpecificLayersTrained] = useState<number[]>([])
@@ -35,25 +34,22 @@ export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
         event.preventDefault()
 
         // Check if any field is empty or invalid
-        if (steps.length == 0 ||
+        if (steps == 0 ||
             learningRate.length == 0 ||
             batchSize === 0 ||
-            specificLayersTrained.length === 0 ||
             trainingName.trim() === "" ||
             loraRank === "" ||
             triggerWord.trim() === "" ||
             optimizer === "" ||
             captionDropoutRate.length == 0 ||
             resolution.trim() === "") {
-            toast({
-                title: "Please fill all details",
-            })
+            toast({ title: "Please fill all details" })
             return
         }
 
-        console.log("Form submitted with:", {
+        const dataToSend = {
             images_url: zipUrl,
-            steps: steps[0],
+            steps: steps,
             learning_rate: learningRate[0],
             batch_size: batchSize,
             specific_layers_trained: specificLayersTrained,
@@ -64,29 +60,16 @@ export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
             caption_dropout_rate: captionDropoutRate[0],
             autocaption: autoCaption,
             resolution,
-            huggingface_repo_id: `bb1070/${trainingName}`
-        })
+            huggingface_repo_id: `bb1070/${trainingName}`,
+        }
 
+console.log("data to send",dataToSend)
         try {
             toast({
                 title: "Training started...",
             })
             setIsTrainingStarted(true)
-            const response = await axios.post("http://localhost:4000/api/training/queue-training", {
-                images_url: zipUrl,
-                steps: steps[0],
-                learning_rate: learningRate[0],
-                batch_size: batchSize,
-                specific_layers_trained: specificLayersTrained,
-                training_name: trainingName,
-                lora_rank: loraRank,
-                trigger_Word: triggerWord,
-                optimizer,
-                caption_dropout_rate: captionDropoutRate[0],
-                autocaption: autoCaption,
-                resolution,
-                huggingface_repo_id: `bb1070/${trainingName}`
-            },
+            const response = await axios.post("http://localhost:4000/api/training/queue-training", dataToSend,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -94,7 +77,12 @@ export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
                 });
 
             setTrainingId(response.data.data.trainingId)
-            poll(response.data.data.trainingId)
+            poll(response.data.data.trainingId);
+            dataToSend.training_id = response.data.data.trainingId;
+            dataToSend.status = "queued";
+            dataToSend.prompt = prompt;
+           
+            const res = await axios.post('/api/addTrainings', dataToSend)
             console.log("Response from API:", response.data)
 
         } catch (err) {
@@ -105,7 +93,7 @@ export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
     const getLogs = async () => {
         const interval = setInterval(async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/training/get-logs/${trainingName}`); // Call your API
+                const response = await axios.get(`http://localhost:4000/api/training/get-logs/${trainingId}`); // Call your API
                 const logs = response.data; // Adjust based on your API's response structure
                 console.log(logs);
                 // Stop polling if the status is one of the terminal states
@@ -166,9 +154,9 @@ export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
 
 
     return (
-        <div className="w-full h-screen">
+        <div className="w-full h-screen flex justify-center items-center">
 
-            {!isTrainingStarted && <Card className="w-full max-w-[80%] mx-auto">
+            {!isTrainingStarted && <Card className="w-full max-w-[80%] mx-auto border">
                 <CardHeader>
                     <CardTitle>AI Training Parameters</CardTitle>
                     <CardDescription>Adjust the training parameters for your AI model</CardDescription>
@@ -176,14 +164,14 @@ export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-2">
                         <div className="space-y-2">
-                            <Label htmlFor="steps">Steps: {steps[0]}</Label>
-                            <Slider
-                                id="steps"
+                            <Label htmlFor="steps">Steps: {steps}</Label>
+                            <Input
+                                id="batch-size"
+                                type="number"
                                 min={0}
                                 max={4000}
-                                step={1}
                                 value={steps}
-                                onValueChange={setSteps}
+                                onChange={(e) => setSteps(Number(e.target.value))}
                             />
                         </div>
                         <div className="space-y-2">
@@ -307,7 +295,7 @@ export default function AITrainingForm({ zipUrl }: { zipUrl: string }) {
                     <h1 className="text-2xl font-bold text-center mt-4">Training started</h1>
 
                     <div className="flex justify-end items-center">
-                    <Button onClick={() => terminateTraining(trainingId)}>stop</Button>
+                        <Button onClick={() => terminateTraining(trainingId)}>stop</Button>
                     </div>
                 </>
             }

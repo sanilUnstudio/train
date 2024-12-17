@@ -8,11 +8,12 @@ import { saveAs } from "file-saver";
 import { useRouter } from "next/navigation";
 
 
-export default function Step1({ setStep, setZipUrl  }) {
+export default function Step1({ setStep, setZipUrl, setPrompt  }) {
     const [isLoading, setIsLoading] = useState(false);
     const [productName, setProductName] = useState("");
     const [allImages, setAllImages] = useState([]);
     const [captionsData, setCaptionsData] = useState([]);
+    const [zipStatus, setZipStatus] = useState(false)
     const router = useRouter();
 
     const handleImageChange = (e) => {
@@ -46,7 +47,8 @@ export default function Step1({ setStep, setZipUrl  }) {
                 imageUrl: imagesUrls[index],
             }));
             console.log("mergedData:", mergedData);
-            setCaptionsData(mergedData); // Store the response data to display captions
+            setCaptionsData(mergedData);// Store the response data to display captions
+            setPrompt(mergedData[0].caption)
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Axios error:", error.response?.data || error.message);
@@ -67,6 +69,7 @@ export default function Step1({ setStep, setZipUrl  }) {
     };
 
     const generateZip = async (data) => {
+        setZipStatus(true)
         const zip = new JSZip();
 
         for (const item of data) {
@@ -102,16 +105,18 @@ export default function Step1({ setStep, setZipUrl  }) {
 
             // Optional: Set the URL to display or for further actions
             setZipUrl(response.data.fileUrl);
-            // setStep(2);
-            router.refresh();
+            setStep(2);
 
         } catch (error) {
             console.error("Error uploading zip file:", error);
         }
-
         // Save the zip file locally (if needed)
         saveAs(content, "images_and_captions.zip");
+        setZipStatus(false);
     };
+
+
+
 
 
     return (
@@ -131,9 +136,10 @@ export default function Step1({ setStep, setZipUrl  }) {
                     onChange={handleImageChange}
                 />
                 <div className='flex justify-end'>
-                    <Button className='border border-white border-opacity-40' type="submit" onClick={() => sendRequest(productName, allImages)} disabled={isLoading}>
-                        {isLoading ? 'Sending...' : 'Send Request'}
+                    <Button className='border border-white border-opacity-40' type="submit" onClick={() => sendRequest(productName, allImages)} disabled={(isLoading || zipStatus)}>
+                        {isLoading  ? 'Generating...' : 'Generate Captions'}
                     </Button>
+                
                 </div>
             </div>
 
@@ -142,7 +148,9 @@ export default function Step1({ setStep, setZipUrl  }) {
                     <div className="h-full">
                         <div className='flex items-center justify-between mb-4 h-8'>
                             <h2 className="text-xl font-bold">Uploaded Images and Captions</h2>
-                            <Button  onClick={() => generateZip(captionsData)}>Download Zip</Button>
+                            <Button disabled={zipStatus} onClick={() => generateZip(captionsData)}>
+                                {zipStatus ? 'Generating...' : 'Generate Zip'}
+                            </Button>
                         </div>
                         <div className="grid grid-cols-3 gap-4 h-[calc(100%-5rem)] overflow-auto">
                             {captionsData.map((item, index) => (
