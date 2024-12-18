@@ -8,6 +8,7 @@ import { saveAs } from "file-saver";
 import { v4 as uuidv4 } from 'uuid';
 import { X } from 'lucide-react';
 import { useRouter } from "next/navigation";
+import fs from "fs";
 
 export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -28,18 +29,51 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
         try {
             setIsLoading(true);
             // Create a FormData object
-            const formData = new FormData();
-            formData.append("product", product);
-
-            // Append each file to the FormData
-            files.forEach((file) => {
-                formData.append("files", file);
-            });
 
             console.log("FormData:", files, product);
+ 
+            const dataUrls = await Promise.all(
+                files.map(async (file) => {
+
+                    const response = await fetch('/api/getPresignedUrl', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fileName: file.name,
+                            fileType: file.type,
+                        }),
+                    });
+
+                    const { uploadUrl } = await response.json();
+
+                    if (!uploadUrl) {
+                        throw new Error('Failed to get upload URL.');
+                    }
+
+                    // Upload file to S3 using the pre-signed URL
+                    const s3Response = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        body: file,
+                        headers: {
+                            'Content-Type': file.type,
+                        },
+                    });
+                      console.log("sanil",s3Response, uploadUrl)
+                    if (!s3Response.ok) {
+                        throw new Error('Failed to upload file to S3.');
+                    }
+                    return s3Response.url.split('?X')[0]
+                })
+            )
+          
+
+            console.log("urls", dataUrls);
 
             // Send the POST request
-            const response = await axios.post("/api/getCaptions", formData);
+            const response = await axios.post("/api/getCaptions", {
+                product,
+                imageUrls: dataUrls
+            });
 
             console.log("Response from API:", response.data);
             let imagesUrls = response.data.imageUrls;
@@ -48,7 +82,8 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
                 ...item,
                 imageUrl: imagesUrls[index],
             }));
-            console.log("mergedData:", mergedData);
+            console.log("mergedData:", imagesUrls, captions,mergedData);
+
             setCaptionsData(mergedData);// Store the response data to display captions
             setPrompt(mergedData[0].caption)
             setProductImage(mergedData[0].imageUrl)

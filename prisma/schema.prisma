@@ -19,7 +19,7 @@ model Trainings {
   trigger_word            String?
   caption_dropout_rate    Int?      @db.SmallInt
   resolution              String?
-  learning_rate           Float?    @db.Real
+  learning_rate           String?
   status                  String?
   prompt                  String?
   training_id             String?
