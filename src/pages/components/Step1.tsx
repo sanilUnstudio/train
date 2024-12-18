@@ -129,20 +129,42 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
         // Convert Blob to Base64
         const fileContent = await new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(",")[1]); // Extract base64 content
-            reader.readAsDataURL(content);
+            reader.onloadend = () => resolve(new Uint8Array(reader.result)); // Binary data
+            reader.readAsArrayBuffer(content); // Read as ArrayBuffer, not DataURL
         });
 
-        try {
-            const response = await axios.post("/api/uploadZipFile", {
-                fileContent,
-                fileName: `${productName}-${uuidv4()}.zip`,
-                fileSize: content.size,
-            });
-            console.log("Zip file uploaded successfully:", response.data);
 
+        try {
+            const response = await fetch('/api/getPresignedUrl', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fileName: `${productName}-${uuidv4()}.zip`,
+                    fileType: 'application/zip',
+                }),
+            });
+
+            const { uploadUrl } = await response.json();
+
+            if (!uploadUrl) {
+                throw new Error('Failed to get upload URL.');
+            }
+
+            // Upload file to S3 using the pre-signed URL
+            const s3Response = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: fileContent, // Binary data
+                headers: {
+                    'Content-Type': 'application/zip',
+                },
+            });
+
+            if (!s3Response.ok) {
+                throw new Error('Failed to upload file to S3.');
+            }
+            console.log("zipUrl", s3Response.url.split('?X')[0]);
             // Optional: Set the URL to display or for further actions
-            setZipUrl(response.data.fileUrl);
+            setZipUrl(s3Response.url.split('?X')[0]);
             setStep(2);
 
         } catch (error) {
