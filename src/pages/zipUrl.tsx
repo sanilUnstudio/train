@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 export default function ZipUrl() {
   const { toast } = useToast()
   const [steps, setSteps] = useState<number>(1000)
-  const [learningRate, setLearningRate] = useState<number[]>([0.0004])
+  const [learningRate, setLearningRate] = useState<string>('4e-4')
   const [batchSize, setBatchSize] = useState<number>(1)
   const [specificLayersTrained, setSpecificLayersTrained] = useState<number[]>([])
   const [trainingName, setTrainingName] = useState<string>("")
@@ -40,7 +40,7 @@ export default function ZipUrl() {
 
     // Check if any field is empty or invalid
     if (steps == 0 ||
-      learningRate.length == 0 ||
+      learningRate== ''||
       batchSize === 0 ||
       trainingName.trim() === "" ||
       loraRank === "" ||
@@ -57,7 +57,7 @@ export default function ZipUrl() {
     const dataToSend = {
       images_url: zipUrl,
       steps: steps,
-      learning_rate: learningRate[0],
+      learning_rate: learningRate,
       batch_size: batchSize,
       specific_layers_trained: specificLayersTrained,
       training_name: trainingName,
@@ -216,14 +216,11 @@ export default function ZipUrl() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="learning-rate">Learning Rate: {learningRate[0].toFixed(6)}</Label>
-                    <Slider
+                    <Label htmlFor="learning-rate">Learning Rate: {learningRate}</Label>
+                    <Input
                       id="learning-rate"
-                      min={0}
-                      max={0.0004}
-                      step={0.000001}
                       value={learningRate}
-                      onValueChange={setLearningRate}
+                      onChange={(e) => setLearningRate(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">

@@ -190,6 +190,7 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
                 <div className='flex items-center gap-2'>
                     <Button onClick={() => router.push("/zipUrl")} className='border border-white border-opacity-40'>Train with zipUrl</Button>
                     <Button onClick={() => router.push("/allTrainings")} className='border border-white border-opacity-40'>All Trainings</Button>
+                    <Button onClick={() => router.push("/checkStatus")} className='border border-white border-opacity-40'>Check Status</Button>
                 </div>
             </div>
             <div className='flex flex-col gap-2'>
