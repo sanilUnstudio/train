@@ -18,12 +18,18 @@ export default async function handler(req, res) {
 
   const { fileName, fileType } = req.body;
 
-  if (!fileName || !fileType) {
+  if ( !fileType) {
     return res.status(400).json({ error: "Missing fileName or fileType" });
   }
 
   const folder = "training-products";
-            const key = `${folder}/${uuidv4()}.webp`;
+  let key 
+  if (!fileName) {
+    key = `${folder}/${uuidv4()}.webp`;
+  } else {
+    key = fileName
+  }
+
 
   try {
     console.log("key",key);
