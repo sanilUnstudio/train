@@ -15,12 +15,12 @@ interface TrainingProgressItem {
 }
 
 export default function MinimalTrainingProgress({ items }: { items: TrainingProgressItem[] }) {
-    if(!items[0]?.length) {
+
+    if (Array.isArray(items) && items.length > 0 && Object.keys(items[0]).length === 0) {
         return <div>
             <h1>No Logs Training is completed</h1>
         </div>
     }
-    console.log("items", items)
     return (
         <div className="space-y-4 w-full max-w-md mx-auto">
             {items.map((item, index) => (
