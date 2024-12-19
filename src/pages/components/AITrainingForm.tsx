@@ -68,11 +68,8 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
         console.log("data to send", dataToSend)
         // return;
         try {
-            toast({
-                title: "Training started...",
-            })
             setIsTrainingStarted(true)
-            const response = await axios.post("http://localhost:4000/api/training/queue-training", dataToSend,
+            const response = await axios.post("https://lora-training-backend.getstudioai.com/api/training/queue-training", dataToSend,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -80,82 +77,21 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
                 });
 
             setTrainingId(response.data.data.trainingId)
-            poll(response.data.data.trainingId);
             dataToSend.training_id = response.data.data.trainingId;
             dataToSend.status = "queued";
             dataToSend.prompt = prompt;
             dataToSend.product_image = productImage;
-
             const res = await axios.post('/api/addTrainings', dataToSend)
             console.log("Response from API:", response.data)
-
+            toast({
+                title: "Training started...",
+            })
+            router.refresh();
+            
         } catch (err) {
             console.log(err)
         }
     }
-
-    const getLogs = async () => {
-        const interval = setInterval(async () => {
-            try {
-                const response = await axios.get(`http://localhost:4000/api/training/get-logs/${trainingId}`); // Call your API
-                const logs = response.data; // Adjust based on your API's response structure
-                console.log(logs);
-                // Stop polling if the status is one of the terminal states
-            } catch (error) {
-                console.error('Error during polling:', error.message || error);
-                clearInterval(interval); // Clear the interval to stop polling
-            }
-        }, 5000);
-    }
-
-    const poll = async (id: string) => {
-        const logInterval: { current: NodeJS.Timeout | null } = { current: null }; // To track the logging interval
-
-        const interval = setInterval(async () => {
-            try {
-                const response = await axios.get(`http://localhost:4000/api/training/check-status/${id}`); // Call your API
-                const status = response.data.status; // Adjust based on your API's response structure
-                console.log(`Status: ${status}`);
-
-                // If the status is "started", ensure getLogs is running
-                if (status === 'started') {
-                    if (!logInterval.current) {
-                        logInterval.current = setInterval(getLogs, 5000); // Start logging
-                    }
-                } else {
-                    // If not "started", stop the logging interval if it exists
-                    if (logInterval.current) {
-                        clearInterval(logInterval.current);
-                        logInterval.current = null;
-                    }
-
-                    // Stop polling if the status is one of the terminal states
-                    if (['stopped', 'failed', 'completed'].includes(status)) {
-                        console.log(`Polling stopped. Final status: ${status}`);
-                        clearInterval(interval); // Clear the polling interval
-                    }
-                }
-            } catch (error) {
-                console.error('Error during polling:', error.message || error);
-                clearInterval(interval); // Clear the polling interval to stop polling
-                if (logInterval.current) {
-                    clearInterval(logInterval.current); // Clear the logging interval as well
-                    logInterval.current = null;
-                }
-            }
-        }, 5000);
-    };
-
-    const terminateTraining = async (id) => {
-        try {
-            const response = await axios.get(`http://localhost:4000/api/training/initiate-termination/${id}`); // Call your API
-            const status = response.data.status; // Adjust based on your API's response structure
-            console.log(`Status: ${status}`);
-        } catch (error) {
-            console.error('Error during polling:', error.message || error);
-        }
-    }
-
 
     return (
         <div className="w-full h-screen">
@@ -298,8 +234,8 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
                 <>
                     <h1 className="text-2xl font-bold text-center mt-4">Training started</h1>
                     <div className="flex justify-end items-center gap-4">
-                        <Button className="border-white border-opacity-40 border" onClick={() => terminateTraining(trainingId)}>stop</Button>
-                        <Button className="border-white border-opacity-40 border" onClick={() => router.refresh()}>Add new Training</Button>
+                        {/* <Button className="border-white border-opacity-40 border" onClick={() => terminateTraining(trainingId)}>stop</Button> */}
+                        {/* <Button className="border-white border-opacity-40 border" >Add new Training</Button> */}
                     </div>
                 </>
             }

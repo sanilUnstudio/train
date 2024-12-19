@@ -42,7 +42,7 @@ const AllTrainings = () => {
           {isLoading && <p className='text-center'>Loading...</p>}
           {!isLoading && allImages?.trainings.length > 0 && 
           
-              <div className='w-[80%] mx-auto border border-white border-opacity-40 rounded-lg overflow-auto h-[90vh]'>
+              <div className='w-[90%] mx-auto border border-white border-opacity-40 rounded-lg overflow-auto h-[90vh]'>
                   <Table className='  '>
                       <TableHeader className=''>
                           <TableRow className=" text-black">
@@ -50,6 +50,7 @@ const AllTrainings = () => {
                               <TableHead className="w-1/2 min-w-[200px] text-white font-bold">Prompt</TableHead>
                               <TableHead className="w-1/6 min-w-[150px] text-white font-bold">Zip URL</TableHead>
                               <TableHead className="w-1/6 min-w-[150px] text-white font-bold">Training Name</TableHead>
+                              <TableHead className="w-1/6 min-w-[150px] text-white font-bold">Training ID</TableHead>
                           </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -80,6 +81,13 @@ const AllTrainings = () => {
                                   <TableCell className="align-top">
                                       <div className="max-h-[100px] overflow-y-auto pr-2">
                                           {item.training_name}
+                                      </div>
+                                  </TableCell>
+                                  <TableCell onClick={() => {
+                                      router.push('/checkStatus/' + item.training_id)
+                                  }} className="align-top">
+                                      <div className="max-h-[100px] overflow-y-auto pr-2">
+                                          {item.training_id}
                                       </div>
                                   </TableCell>
                               </TableRow>
