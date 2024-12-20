@@ -21,7 +21,7 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
     const [batchSize, setBatchSize] = useState<number>(1)
     const [specificLayersTrained, setSpecificLayersTrained] = useState<number[]>([])
     const [trainingName, setTrainingName] = useState<string>("")
-    const [loraRank, setLoraRank] = useState<string>("8")
+    const [loraRank, setLoraRank] = useState<string>("16")
     const [triggerWord, setTriggerWord] = useState<string>("UNST")
     const [optimizer, setOptimizer] = useState<string>("adamw8bit")
     const [captionDropoutRate, setCaptionDropoutRate] = useState<number[]>([0.05])
