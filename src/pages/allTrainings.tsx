@@ -10,7 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { useRouter } from "next/navigation";
-import { CheckStatusButton } from './components/CheckStatusButton'
+import  CheckStatusButton  from './components/CheckStatusButton'
 import { useToast } from "@/hooks/use-toast"
 
 const fetchAllTrainings = async () => {
