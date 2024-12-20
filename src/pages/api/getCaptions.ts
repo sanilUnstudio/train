@@ -6,6 +6,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_API_KEY,
 });
 
+export const config = {
+  maxDuration: 60,
+};
+
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
