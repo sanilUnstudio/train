@@ -36,7 +36,7 @@ const AllTrainings = () => {
             {isLoading && <p className='text-center'>Loading...</p>}
             {!isLoading && allImages?.trainings.length > 0 &&
 
-                <div className='w-[90%] mx-auto border border-white border-opacity-40 rounded-lg overflow-auto h-[90vh]'>
+                <div className='w-[95%] mx-auto border border-white border-opacity-40 rounded-lg overflow-auto h-[90vh]'>
                     <Table className='  '>
                         <TableHeader className=''>
                             <TableRow className=" text-black">
@@ -50,15 +50,15 @@ const AllTrainings = () => {
                         </TableHeader>
                         <TableBody>
                             {allImages?.trainings.map((item: any) => (
-                                <TableRow key={item.id} className="min-h-[70px] cursor-pointer hover:bg-[#18181c] border-t border-white border-opacity-40">
+                                <TableRow key={item.id} className=" cursor-pointer hover:bg-[#18181c] border-t border-white border-opacity-40">
                                     <TableCell className="align-top">
                                         {item.product_image ?
 
                                             <div onClick={() => {
                                                 navigator.clipboard.writeText(item.product_image);
                                                 toast({ title: "Copied product image url", className: "bg-black", })
-                                            }} className='w-full h-full'>
-                                                <img src={item.product_image} className='object-contain' />
+                                            }} className='w-full'>
+                                                <img src={item.product_image} className='object-contain  h-[70px]' />
                                             </div>
                                             : 'N/A'}
                                     </TableCell>
@@ -66,7 +66,7 @@ const AllTrainings = () => {
                                         <div onClick={() => {
                                             navigator.clipboard.writeText(item.prompt);
                                             toast({ title: "Copied prompt", className: "bg-black", })
-                                        }} className="max-h-[100px] overflow-y-auto pr-2">
+                                        }} className="max-h-[70px] overflow-y-auto pr-2">
                                             {item.prompt}
                                         </div>
                                     </TableCell>
@@ -79,20 +79,20 @@ const AllTrainings = () => {
                                                     className: "bg-black",
                                                 })
                                             }}
-                                            className="max-h-[100px] overflow-y-auto pr-2">
+                                            className="max-h-[70px] overflow-y-auto pr-2">
                                             {item.image_url}
                                         </div>
                                     </TableCell>
                                     <TableCell className="align-top">
                                         <div
-                                            className="max-h-[100px] overflow-y-auto pr-2">
+                                            className="max-h-[70px] overflow-y-auto pr-2">
                                             {item.training_name}
                                         </div>
                                     </TableCell>
                                     <TableCell onClick={() => {
                                         router.push('/checkStatus/' + item.training_id)
                                     }} className="align-top">
-                                        <div className="max-h-[100px] overflow-y-auto pr-2">
+                                        <div className="max-h-[70px] overflow-y-auto pr-2">
                                             {item.training_id}
                                         </div>
                                     </TableCell>
