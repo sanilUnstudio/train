@@ -87,7 +87,7 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
                 title: "Training started...",
             })
             router.refresh();
-            
+
         } catch (err) {
             console.log(err)
         }
@@ -234,8 +234,6 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
                 <>
                     <h1 className="text-2xl font-bold text-center mt-4">Training started</h1>
                     <div className="flex justify-end items-center gap-4">
-                        {/* <Button className="border-white border-opacity-40 border" onClick={() => terminateTraining(trainingId)}>stop</Button> */}
-                        {/* <Button className="border-white border-opacity-40 border" >Add new Training</Button> */}
                     </div>
                 </>
             }
