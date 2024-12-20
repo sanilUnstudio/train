@@ -12,7 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import  CheckStatusButton  from './components/CheckStatusButton'
 import { useToast } from "@/hooks/use-toast"
-
+import StopButton from './components/StopButton';
 const fetchAllTrainings = async () => {
     const res = await axios('/api/getAllTrainings');
     return res.data;
@@ -107,8 +107,14 @@ const AllTrainings = () => {
                                                 {item.status == 'failed' && <div className='bg-red-300 inline-block px-1 py-1 rounded-lg text-xs text-black'>
                                                     <h1>failed</h1>
                                                 </div>}
+                                                {item.status == 'stopped' && <div className='bg-red-300 inline-block px-1 py-1 rounded-lg text-xs text-black'>
+                                                    <h1>Stopped</h1>
+                                                </div>}
                                             </>
-                                            : <CheckStatusButton id={item.training_id} />}
+                                            : <div className='flex items-center'>
+                                                <CheckStatusButton id={item.training_id} />
+                                                <StopButton id={item.training_id} />
+                                            </div>}
                                     </TableCell>
 
                                 </TableRow>
