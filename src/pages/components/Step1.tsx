@@ -8,9 +8,11 @@ import { saveAs } from "file-saver";
 import { v4 as uuidv4 } from 'uuid';
 import { X } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import fs from "fs";
+import { useToast } from "@/hooks/use-toast"
+
 
 export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }) {
+    const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [productName, setProductName] = useState("");
     const [allImages, setAllImages] = useState([]);
@@ -93,6 +95,7 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
             } else {
                 console.error("Unexpected error:", error);
             }
+            toast({ title: "Error in generating captions", className: "bg-black", })
         } finally {
             setIsLoading(false);
         }
