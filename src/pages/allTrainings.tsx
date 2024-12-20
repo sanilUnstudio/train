@@ -10,9 +10,10 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { useRouter } from "next/navigation";
-import  CheckStatusButton  from './components/CheckStatusButton'
+import CheckStatusButton from './components/CheckStatusButton'
 import { useToast } from "@/hooks/use-toast"
 import StopButton from './components/StopButton';
+import { cn } from '@/lib/utils';
 const fetchAllTrainings = async () => {
     const res = await axios('/api/getAllTrainings');
     return res.data;
@@ -29,6 +30,9 @@ const AllTrainings = () => {
         },
     });
 
+    function capitalizeFirstLetter(val) {
+        return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    }
     return (
         <div className='w-screen h-screen '>
             <h1 onClick={() => router.push('/')} className='text-center text-2xl py-2 cursor-pointer'>All Trainings</h1>
@@ -99,18 +103,11 @@ const AllTrainings = () => {
 
                                     <TableCell className="align-top">
                                         {item.status != 'queued' ?
-                                            <>
-                                                {item.status == 'completed' && <div className='bg-green-300 inline-block px-1 py-1 rounded-lg text-xs text-black'>
-                                                    <h1>completed</h1>
-                                                </div>}
 
-                                                {item.status == 'failed' && <div className='bg-red-300 inline-block px-1 py-1 rounded-lg text-xs text-black'>
-                                                    <h1>failed</h1>
-                                                </div>}
-                                                {item.status == 'stopped' && <div className='bg-red-300 inline-block px-1 py-1 rounded-lg text-xs text-black'>
-                                                    <h1>Stopped</h1>
-                                                </div>}
-                                            </>
+                                            <div className={cn('bg-red-300 inline-block px-1 py-1 rounded-lg text-xs text-black', item.status == 'completed' && 'bg-green-300')}>
+                                                <h1>{capitalizeFirstLetter(item.status)}</h1>
+                                            </div>
+
                                             : <div className='flex items-center'>
                                                 <CheckStatusButton id={item.training_id} />
                                                 <StopButton id={item.training_id} />
