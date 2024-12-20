@@ -45,8 +45,7 @@ export const CheckStatusButton = ({ id }: { id: string }) => {
                 status == 'started' && 'bg-yellow-300 text-black border-transparent',
                 status == 'completed' && 'bg-green-300 text-black border-transparent',
             )} disabled={isCheckingStatus} onClick={() => checkStatus(id)}>
-                {isCheckingStatus && <Loader2 className="animate-spin" />}
-                {status ? status : "Check Status"}
+                {isCheckingStatus ? <Loader2 className="animate-spin" /> : status ? status : "Check Status"}
             </Button>
         </div>
     )
