@@ -6,8 +6,7 @@ import axios from 'axios';
 import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query'
 
-
-export const CheckStatusButton = ({ id }: { id: string }) => {
+ const CheckStatusButton = ({ id }: { id: string }) => {
     const { toast } = useToast();
     const [isCheckingStatus, setIsCheckingStatus] = useState(false);
     const [status, setStatus] = useState(null);
@@ -40,7 +39,7 @@ export const CheckStatusButton = ({ id }: { id: string }) => {
         setIsCheckingStatus(false);
     }
     return (
-        <div className="max-h-[100px] overflow-y-auto pr-2">
+        <div className="max-h-[70px] overflow-y-auto pr-2">
             <Button className={cn('border border-white border-opacity-40',
                 status == 'started' && 'bg-yellow-300 text-black border-transparent',
                 status == 'completed' && 'bg-green-300 text-black border-transparent',
@@ -50,3 +49,5 @@ export const CheckStatusButton = ({ id }: { id: string }) => {
         </div>
     )
 }
+
+export default CheckStatusButton
