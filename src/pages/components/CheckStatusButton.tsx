@@ -40,8 +40,8 @@ import { cn } from '@/lib/utils';
     }
     return (
         <div className="max-h-[70px] overflow-y-auto pr-2">
-            <Button className={cn('border border-white border-opacity-40 hover:bg-yellow-300',
-                status == 'started' && 'bg-yellow-300 text-black border-transparent',
+            <Button className={cn('border border-white border-opacity-40',
+                status == 'started' && 'bg-yellow-300 text-black border-transparent hover:bg-yellow-300',
             )} disabled={isCheckingStatus} onClick={() => checkStatus(id)}>
                 {isCheckingStatus ? <Loader2 className="animate-spin" /> : status ? status : "Check Status"}
             </Button>
