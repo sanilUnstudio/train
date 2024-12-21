@@ -6,7 +6,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const trainings = await prisma.trainings.findMany();
+    const trainings = await prisma.trainings.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     res.status(200).json({ trainings });
   } catch (err) {
     console.log(err);
