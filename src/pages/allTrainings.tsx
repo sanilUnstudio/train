@@ -54,7 +54,7 @@ const AllTrainings = () => {
                         </TableHeader>
                         <TableBody>
                             {allImages?.trainings.map((item: any) => (
-                                <TableRow key={item.id} className=" cursor-pointer hover:bg-[#18181c] border-t border-white border-opacity-40">
+                                <TableRow key={item.training_id} className=" cursor-pointer hover:bg-[#18181c] border-t border-white border-opacity-40">
                                     <TableCell className="align-top">
                                         {item.product_image ?
 
@@ -109,8 +109,8 @@ const AllTrainings = () => {
                                             </div>
 
                                             : <div className='flex items-center'>
-                                                <CheckStatusButton id={item.training_id} />
-                                                <StopButton id={item.training_id} />
+                                                <CheckStatusButton key={item.training_id} id={item.training_id} />
+                                                <StopButton key={item.training_id} id={item.training_id} />
                                             </div>}
                                     </TableCell>
 
