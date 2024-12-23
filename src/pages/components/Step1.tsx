@@ -4,36 +4,45 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import axios from "axios";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
+import  { saveAs } from "file-saver";
 import { v4 as uuidv4 } from 'uuid';
 import { X } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast"
 
 
-export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }) {
+type Step1Props = {
+    setStep: React.Dispatch<React.SetStateAction<number>>;
+    setZipUrl: React.Dispatch<React.SetStateAction<string>>;
+    setPrompt: React.Dispatch<React.SetStateAction<string>>;
+    setProductImage: React.Dispatch<React.SetStateAction<string>>;  
+}
+
+type CaptionsData = {
+    imageUrl: string;
+    caption: string;
+}
+
+export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }:Step1Props) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [productName, setProductName] = useState("");
-    const [allImages, setAllImages] = useState([]);
-    const [captionsData, setCaptionsData] = useState([]);
+    const [allImages, setAllImages] = useState<File[]>([]);
+    const [captionsData, setCaptionsData] = useState<CaptionsData[]>([]);
     const [zipStatus, setZipStatus] = useState(false);
     const router = useRouter();
 
     const handleImageChange = (e) => {
-        const selectedFiles = Array.from(e.target.files); // Convert FileList to Array
+        const selectedFiles = Array.from(e.target.files) as File[]; // Convert FileList to Array
         setAllImages(selectedFiles); // Append new files to existing state
         console.log("allImages:", selectedFiles)
         e.target.value = ""; // Clear the input value to allow re-upload of the same file
     };
 
-    const sendRequest = async (product, files) => {
+    const sendRequest = async (product:string, files:File[]) => {
         try {
             setIsLoading(true);
             // Create a FormData object
-
-            console.log("FormData:", files, product);
- 
             const dataUrls = await Promise.all(
                 files.map(async (file) => {
 
@@ -68,9 +77,6 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
                 })
             )
           
-
-            console.log("urls", dataUrls);
-
             // Send the POST request
             const response = await axios.post("/api/getCaptions", {
                 product,
@@ -84,7 +90,6 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
                 ...item,
                 imageUrl: imagesUrls[index],
             }));
-            console.log("mergedData:", imagesUrls, captions,mergedData);
 
             setCaptionsData(mergedData);// Store the response data to display captions
             setPrompt(mergedData[0].caption)
@@ -101,28 +106,29 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
         }
     };
 
-    const handleCaptionChange = (index, newCaption) => {
-        setCaptionsData((prevData) =>
-            prevData.map((item, i) =>
+    const handleCaptionChange = (index: number, newCaption: string) => {
+        setCaptionsData((prevData:CaptionsData[]) =>
+            prevData.map((item:CaptionsData, i) =>
                 i === index ? { ...item, caption: newCaption } : item
             )
         );
     };
 
-    const generateZip = async (data) => {
+    const generateZip = async (data:CaptionsData[]) => {
         setZipStatus(true)
         const zip = new JSZip();
 
-        for (const item of data) {
+        for (let i = 1; i <= data.length; i++) {
+            let item = data[i-1];
             // Fetch the image as a blob
             const imageResponse = await axios.get(item.imageUrl, { responseType: "blob" });
             const imageBlob = imageResponse.data;
 
             // Add the image to the zip
-            zip.file(`${item.order}.jpg`, imageBlob);
+            zip.file(`${i}.jpg`, imageBlob);
 
             // Add the caption as a text file
-            zip.file(`${item.order}.txt`, item.caption);
+            zip.file(`${i}.txt`, item.caption);
         }
 
         // Generate the zip file
@@ -137,12 +143,13 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
         });
 
 
+        let key = `${productName}-${uuidv4()}.zip`;
         try {
             const response = await fetch('/api/getPresignedUrl', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    fileName: `${productName}-${uuidv4()}.zip`,
+                    fileName: key,
                     fileType: 'application/zip',
                 }),
             });
@@ -165,9 +172,9 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
             if (!s3Response.ok) {
                 throw new Error('Failed to upload file to S3.');
             }
-            console.log("zipUrl", s3Response.url.split('?X')[0]);
-            // Optional: Set the URL to display or for further actions
-            setZipUrl(s3Response.url.split('?X')[0]);
+            let url = `https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`
+            console.log("zipUrl",url);
+            setZipUrl(url);
             setStep(2);
 
         } catch (error) {
@@ -193,7 +200,6 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
                 <div className='flex items-center gap-2'>
                     <Button onClick={() => router.push("/zipUrl")} className='border border-white border-opacity-40'>Train with zipUrl</Button>
                     <Button onClick={() => router.push("/allTrainings")} className='border border-white border-opacity-40'>All Trainings</Button>
-                    {/* <Button onClick={() => router.push("/checkStatus")} className='border border-white border-opacity-40'>Check Status</Button> */}
                 </div>
             </div>
             <div className='flex flex-col gap-2'>
@@ -231,7 +237,7 @@ export default function Step1({ setStep, setZipUrl, setPrompt, setProductImage }
                                 <div key={index} className="border border-white border-opacity-40 p-1 h-[23.5rem] rounded shadow-sm">
                                     <img
                                         src={item.imageUrl}
-                                        alt={item.fileName}
+                                        alt={item.caption}
                                         className="w-full h-64 object-contain rounded"
                                     />
                                     <textarea

@@ -28,7 +28,6 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
     const [autoCaption, setAutoCaption] = useState<boolean>(false)
     const [resolution, setResolution] = useState<string>("512,768,1024");
     const [isTrainingStarted, setIsTrainingStarted] = useState<boolean>(false);
-    const [trainingId, setTrainingId] = useState('');
     const router = useRouter();
 
 
@@ -63,6 +62,10 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
             autocaption: autoCaption,
             resolution,
             huggingface_repo_id: `bb1070/${trainingName}`,
+            training_id: '',
+            status: '',
+            prompt: '',
+            product_image:''
         }
 
         console.log("data to send", dataToSend)
@@ -75,8 +78,6 @@ export default function AITrainingForm({ zipUrl, prompt, productImage }: { zipUr
                         'Content-Type': 'application/json',
                     },
                 });
-
-            setTrainingId(response.data.data.trainingId)
             dataToSend.training_id = response.data.data.trainingId;
             dataToSend.status = "queued";
             dataToSend.prompt = prompt;
