@@ -55,7 +55,7 @@ const AllTrainings = () => {
                         <TableBody>
                             {allImages?.trainings.map((item: any) => (
                                 <TableRow key={item.training_id} className=" cursor-pointer hover:bg-[#18181c] border-t border-white border-opacity-40">
-                                    <TableCell className="align-top">
+                                    <TableCell className="align-top cursor-pointer">
                                         {item.product_image ?
 
                                             <div onClick={() => {
@@ -66,7 +66,7 @@ const AllTrainings = () => {
                                             </div>
                                             : 'N/A'}
                                     </TableCell>
-                                    <TableCell className="font-medium align-top">
+                                    <TableCell className="font-medium align-top cursor-pointer">
                                         <div onClick={() => {
                                             navigator.clipboard.writeText(item.prompt);
                                             toast({ title: "Copied prompt", className: "bg-black", })
@@ -74,7 +74,7 @@ const AllTrainings = () => {
                                             {item.prompt}
                                         </div>
                                     </TableCell>
-                                    <TableCell className="align-top">
+                                    <TableCell className="align-top cursor-pointer">
                                         <div
                                             onClick={() => {
                                                 navigator.clipboard.writeText(item.image_url);
@@ -87,7 +87,7 @@ const AllTrainings = () => {
                                             {item.image_url}
                                         </div>
                                     </TableCell>
-                                    <TableCell className="align-top">
+                                    <TableCell className="align-top cursor-pointer">
                                         <div
                                             className="max-h-[70px] overflow-y-auto pr-2">
                                             {item.training_name}
@@ -95,13 +95,13 @@ const AllTrainings = () => {
                                     </TableCell>
                                     <TableCell onClick={() => {
                                         router.push('/checkStatus/' + item.training_id)
-                                    }} className="align-top">
+                                    }} className="align-top cursor-pointer">
                                         <div className="max-h-[70px] overflow-y-auto pr-2">
                                             {item.training_id}
                                         </div>
                                     </TableCell>
 
-                                    <TableCell className="align-top">
+                                    <TableCell className="align-top cursor-pointer">
                                         {item.status != 'queued' ?
 
                                             <div className={cn('bg-red-300 inline-block px-1 py-1 rounded-lg text-xs text-black', item.status == 'completed' && 'bg-green-300')}>
