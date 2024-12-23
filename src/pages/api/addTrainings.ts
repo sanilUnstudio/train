@@ -53,7 +53,7 @@ res.status(200).json({
 });
 
   } catch (error) {
-    console.log("Error processing request:", error.message);
+    console.log("Error processing request:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

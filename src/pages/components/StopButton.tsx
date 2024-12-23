@@ -38,7 +38,7 @@ const StopButton = ({ id }: { id: string }) => {
     }
   }
 
-  const polling = async (id) => {
+  const polling = async (id:string) => {
     const interval = setInterval(async () => {
       try {
         const res = await axios.get(`https://lora-training-backend.getstudioai.com/api/training/check-status-only/${id}`);

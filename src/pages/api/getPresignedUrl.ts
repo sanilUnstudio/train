@@ -1,7 +1,7 @@
 import { S3, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
-
+import { NextApiRequest, NextApiResponse } from "next";
 const s3 = new S3({
   credentials: {
     accessKeyId: process.env.AWS_ACCESS || "",
@@ -11,7 +11,7 @@ const s3 = new S3({
   region: process.env.AWS_REGION,
 });
  
-export default async function handler(req, res) {
+export default async function handler(req:NextApiRequest, res:NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -32,7 +32,6 @@ export default async function handler(req, res) {
 
 
   try {
-    console.log("key",key);
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: key,
